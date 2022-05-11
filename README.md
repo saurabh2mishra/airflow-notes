@@ -9,9 +9,15 @@ Please feel free to contribute any items that you think is missing or misleading
 - [Airflow Architecture](#airflow-architecture)
 - [Installing Airflow](#installing-airflow)
 - [Fundamentals of Airflow](#fundamentals-of-airflow)
-     - [Airflow's module structure](##airflow-module-strcutrure)
-     - [Operators](##operators)
-    
+     - [Airflow's module structure](#airflow-module-strcutrure)
+     - [Workloads](#workloads)
+        - [Operators](#operators)
+        - [Scheduler](#scheduler)
+        - [Executors](#executors)
+        - [hooks](#hooks)
+        - [sensors](#sensors)
+- [Best Practices](#best-practices)
+- [Where to go from here?](#where-to-go-from-here)
      
 ---
 ## Introduction
@@ -19,13 +25,20 @@ Please feel free to contribute any items that you think is missing or misleading
 
 It uses [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph) to create data processing networks or pipelines.
 
-DAG stands for -> Direct Acyclic Graph. Meaning it flows in one direction. You can't come back to same point.
+- DAG stands for -> Direct Acyclic Graph. It flows in one direction. You can't come back to same point i.e. acyclic.
 
-For Data prcoessing we can create our simplest DAG like this
+- In many data processing environments, a series of computations are run on the data to prepare it for one or more ultimate destinations. This type of data processing flow is often referred to as a data pipeline.
+- A DAG or data processing flows can have multiple paths in the flow and that is also called branching.
 
-`read-data-from-some-endpoint--> write-to-storage` 
+A simplest DAG could be like this
 
-where arrow `-->` represent dependencies which means on what basis next action will be triggered.
+`task-read-data-from-some-endpoint --> task-write-to-storage` 
+
+
+where 
+- `read-data-from-some-endpoint` & `write-to-storage`  - reprsent a task (unit of work)
+-  Arrow `-->` represents processing direction and depencies to check on what basis next action will be triggered.
+
 
 ## Ok, so why should we use Airflow?
 
@@ -65,7 +78,7 @@ For now, ite enough on architecture. Let's move to next part.
 ---
 ## Installing Airflow
 
-Airflow provides many options for installations. You can read all the options in the [official airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/installation/index.html). and then decide which options suit your need. However, to keep it simple, I will go ahead with Docker
+Airflow provides many options for installations. You can read all the options in the [official airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/installation/index.html), and then decide which option suits your need. However, to keep it simple and experimental, I will go ahead with Docker way of installation.
 
 Installing Airflow with Docker is simple and intutive which helps us to understand typical features and working of Airflow. Below are the pre-requistes for running Airflow in Docker.
 - Docker Community Edition installed in your machine. Check this link for [Windows](https://docs.docker.com/desktop/windows/) and [Mac](https://docs.docker.com/desktop/mac/). I followed this [blog](https://adamtheautomator.com/docker-for-mac/) for docker installation on Mac
@@ -105,9 +118,16 @@ Now, we are ready to go for the next step.
 
 ## Starting Docker Airflow project
 
-`docker-compose up`
+`docker-compose up --build`
+
+Above command starts a docker environment and runbelow services as well
+- `Webserver`
+- `Scheduler`
+- `Postgres database for metastore`
 
 After few seconds, when everything is up then the webserver is available at: http://localhost:8080. The default account has the login `airflow` and the password `airflow`.
+
+From terminal, you can also run `docker ps ` to check the processes which are up and running.
 
 ## Cleaning up
 
@@ -119,7 +139,7 @@ To stop and delete containers, delete volumes with database data and download im
 
 ## Fundamentals of Airflow 
 
-We have comeup a long way and thanks for following till now. We have installed Airflow and know at high level what it stands for ;) but we are yet to discover how to build our pipeline. We will roughly touch few more concepts and then we will create a full fledged project using these concepts.
+We have installed Airflow and know at high level what it stands for but we are yet to discover how to build our pipeline. We will roughly touch few more concepts and then we will create a full fledged project using these concepts.
 
 So, let's refresh our memory one more time. Airflow works on the principle of **`DAG`** and DAG is acyclic graph. 
 We saw this example `read-data-from-some-endpoint --> write-to-storage` 
@@ -127,6 +147,9 @@ We saw this example `read-data-from-some-endpoint --> write-to-storage`
 So, create an airflow DAG, we will write it like this
 
 - Step 1
+
+Create a DAG. It accepts unique name, when to start it, and what could be the interval of running. There are many more parameters which it accepts but for now let's stick with these three.
+
 ```python
 dag = DAG(                                                     
    dag_id="my_first_dag",                          
@@ -149,7 +172,7 @@ def write_to_storage():
 
 - Step 3
 
-Let's create our operator. We have python functions which need be attached to some Operator. 
+Let's create our operators. We have python functions which need be attached to some Operator. The last argument it accept a DAG and here we need to tell operator that which dag it is going to consider.
 
 ```python
 
@@ -185,6 +208,7 @@ But now you might be thinking from where we got `PythonOperator`, `DAG`, and how
 
 ## Airflow's Module Structure
 
+
 Airflow has standard module structure. It has all it's [important packages](https://airflow.apache.org/docs/apache-airflow/2.0.0/_modules/index.html) under airflow. Few of the important module structures are here
 
 - `airflow` - For DAG and other base API.
@@ -195,10 +219,75 @@ Airflow has standard module structure. It has all it's [important packages](http
 - `airflow.hooks` : Provides different module to connect external API services or databases.
 
 
-So, we asked a question that from where we got our `Python Operators` and now when we know that above modules are there to provide these boilerplate code for us then where should we look for a `Python Operator` or any other Operators.
-You guessed it right. It should be under `airflow.operators`. Similar way an `exeuctor` can be imported from `airflow.executors` and so on.
+So, we looking at above module, now we can easily determine that to get `PythonOperator` or any other Operator we need to import 
+them from `airflow.operators`. Similar way an `exeuctor` can be imported from `airflow.executors` and so on.
 
-### and what if something which I'm interested is not present in any of the module?
+Apart from that, many different packges providers including vendors and third party enhance the capabilty of Airflow. All provideres follow `apache-airflow-providers` nominclatures for the package build.
+Providers can contain operators, hooks, sensor, and transfer operators to communicate with a multitude of external systems, but they can also extend Airflow core with new capabilities.
+
+This is the list of providers - [providers list](https://airflow.apache.org/docs/#providers-packages-docs-apache-airflow-providers-index-html)
+
+-----
+# Workloads
+
+## **`Operators`**
+
+Operators are helpful to run your function or any executble program.
+
+
+### `Types of Operators`
+
+There are many operators which help us to map our code. Few of them are
+- `PythonOperator` - To wrap a python callables/functions inside it.
+- `BashOperator` - To call your bash script or command. Within BashOperator we can also call any executable program. 
+- `DummyOperator` - to show a dummy task
+- `DockerOperator` - To write and execute docker images.
+- `EmailOperator` - To send an email (using SMTP configuration)
+
+*and there many more operators do exits.* See the full [operators list](https://airflow.apache.org/docs/apache-airflow/stable/_api/airflow/operators/index.html) in official documentation.
+
+## **`Scheduler`**
+
+
+## **`Executors`**
+
+It hepls to run the task instance (task instances are function which we have wrapped under operator)
+
+
+### `Types of Executors`
+
+There are two types of executors
+
+**`Local Executors`**
+
+- [Debug Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/debug.html)
+- [Local Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/local.html)
+- [Sequential Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/sequential.html)
+
+**`Remote Executors`**
+
+- [Celery Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/celery.html) - for scaling the workers. Helpful in parallelization.
+- [CeleryKubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/celery_kubernetes.html)
+- [Dask Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/dask.html)
+- [Kubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/kubernetes.html)
+- [LocalKubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/local_kubernetes.html)
+
+## **`Hooks`**
+
+A high level interface to establish a connection with databases or any other external services.
+
+[List of different avaible hooks](https://airflow.apache.org/docs/apache-airflow/stable/_api/airflow/hooks/index.html?highlight=hooks#module-airflow.hooks)
+
+## **`Sensors`**
+
+A special types of operators whose purpose is to wait for an event to happen to start the execution.
+For instance, 
+    
+- `ExternalTaskSensor` waits on another task (in a different DAG) to complete execution.
+- `S3KeySensor` S3 Key sensors are used to wait for a specific file or directory to be available on an S3 bucket.
+
+
+## What if something which I'm interested is not present in any of the module?
 
 If something is not there, then you can write your own custom opertor, sensor, executor, hook or anything which you want.
 Airflow provides Base classes which anyone can inherit to write their own custom stuff. e.g. If I want to write a cutom operator, sensor, hook then this could be the template.
@@ -243,43 +332,34 @@ class MyCustomHook(BaseHook):
 
 ```
 
-### How right shift operator (>>) defines task dependency?
-The __ rshift __ method of the BaseOperator class implements the Python right shift logical operator in the context of setting a task or a DAG downstream of another.
+### How bit shift operator (>> or <<) defines task dependency?
+The __ rshift __ and __ lshift __ methods of the BaseOperator class implements the Python right shift logical operator in the context of setting a task or a DAG downstream of another.
 See the implementation [here](https://github.com/apache/airflow/blob/5355909b5f4ef0366e38f21141db5c95baf443ad/airflow/models.py#L2569).
 
-## Types of Operators
+So, **`bit shift`** been used as syntactic sugar for  `set_upstream` (<<) and `set_downstream` (>>) tasks.
 
-There are many operators which help us to map our code. Few of them are
-- `PythonOperator`
-- `BashOperator`
-- `DummyOperator` - to show a dummy task
--  `DockerOperator` 
-- `EmailOperator`
+For example 
+`task1 >> task2` is same as `task2 << task1` is same as `task1.set_downstream(task2)` is same as  `task1.set_upstream(task2)`
 
-*and many more..* See the full [operators list](https://airflow.apache.org/docs/apache-airflow/stable/_api/airflow/operators/index.html) in official documentation.
+**`bit shift`** plays crucial roles to build relationships among the tasks.
 
 
----
+# Best Practices
 
-Satisfied principles (not listed are not applicable):
-
-Load data incrementally : extracts only the newly created orders of the day before, not the whole table.
-
-Process historic data : it’s possible to rerun the extract processes, but downstream DAGs have to be started manually.
-Enforce the idempotency constraint : every DAG cleans out data if required and possible. Rerunning the same DAG multiple times has no undesirable side effects like duplication of the data.
-
-Rest data between tasks : The data is in persistent storage before and after the operator.
-
-Pool your resources : All task instances in the DAG use a pooled connection to the DWH by specifying the pool parameter.
-
-Manage login details in one place : Connection settings are maintained in the Admin menu.
-
-Develop your own workflow framework : A subdirectory in the DAG code repository contains a framework of operators that are reused between DAGs.
-
-Sense when to start a task : The processing of dimensions and facts have external task sensors which wait until all processing of external DAGs have finished up to the required day.
-
-Specify configuration details once : The place where SQL templates are is configured as an Airflow Variable and looked up as a global parameter when the DAG is instantiated.
-
+ - Write clean DAG and stick with one principle to create your DAG. Generally, in two way we create our DAG
+    - with context manager 
+    - without context manager
+- Keep computation code and DAG definition separate. Everytime DAG loads it recompute, hence more time it took to load.
+- Don't hardocde or leave your senstive connection information in the code. Manage it at central level in secure way.
+- Create the tag and use it for quick look to groups the tasks in monitoring.
+- Always search for existing inbuilt airflow operators, hooks or sensors before creating your own cutom stuff.
+- Data Quality and Testing is often gets overlooked. So make sure you use a standard for your code base.
+- Follow load strategies - incremental, scd types in your code to unnecessary data load.
+- If possible, create a framework for DAG generations. A meta wrapper. Checkout this [repo](https://github.com/ajbosco/dag-factory).
+- Specify configuration details once : The place where SQL templates are is configured as an Airflow Variable and looked up as a global parameter when the DAG is instantiated.
+- Pool your resources : All task instances in the DAG use a pooled connection to the DWH by specifying the pool parameter. 
+- Manage login details in one place : Connection settings are maintained in the Admin menu.
+- Sense when to start a task : The processing of dimensions and facts have external task sensors which wait until all processing of external DAGs have finished up to the required day.
 ## Cron based schedule
 
 ```
@@ -399,6 +479,7 @@ print_context = PythonOperator(
 
 
 ## Reference
+- [Data Pipelines with Apache Airflow ](https://www.manning.com/books/data-pipelines-with-apache-airflow)(Highly recommended)
 - [Source code](https://github.com/apache/airflow/)
 - [Documentation](https://airflow.apache.org/) (official website)
 - [Confluence page](https://cwiki.apache.org/confluence/display/AIRFLOW/Airflow+Home)
