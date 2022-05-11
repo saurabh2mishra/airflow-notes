@@ -37,7 +37,7 @@ A simplest DAG could be like this
 
 where 
 - `read-data-from-some-endpoint` & `write-to-storage`  - reprsent a task (unit of work)
--  Arrow `-->` represents processing direction and depencies to check on what basis next action will be triggered.
+- Arrow `-->` represents processing direction and depencies to check on what basis next action will be triggered.
 
 
 ## Ok, so why should we use Airflow?
