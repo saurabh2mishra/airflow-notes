@@ -42,8 +42,8 @@ where
 
 ## Ok, so why should we use Airflow?
 
-- If you like *`Everything As Code`* and **everything** mean everything including your configurations 😃
-. EaC helps to create any complex level pipeline to solve the problem.
+- If you like *`Everything As Code`* and **everything** mean everything including your configurations 
+. This helps to create any complex level pipeline to solve the problem.
 - If you like open source because mostly everything you can get as as inbuilt operator or executors.
 - `Backfilling` features. It enables you to reprocess historical data.
 
@@ -53,15 +53,17 @@ where
 ---
 ## Airflow Architecture
 
-So, as of know we have atleast an idea that Airflow helps to create the data pipelines. Interanlly, Airflow installs below components to facilitate execution of pipelines. These componenets are 
+So, as of know we have atleast an idea that Airflow is created to build the data pipelines. Below we can see the different componenets of Airflow and their internal connections.
+
+![Airflow Architecture](/imgs/airflow_arch.png)
+
+We can see above components when we do install Airflow and implicitly Airflow installs them to facilitate execution of pipelines. These componenets are 
 
 - `Scheduler`, which parses DAGS, check their schedule interval, and starts scheduling DAGs tasks fir execution by pasing them to airflow workers.
 - `Workers`, Responsible for doing real work. It picks up tasks and excute them.
 - `Websever`, which presents a handy user interface to inspect, trigger and debug the behaviour of DAGs and tasks.
 - `DAG directory`, to keep all dag in place to be read by scheduler and executor.
 - `Metadata Database`, used by scheduler, executor, and webseerver to store state, so that all of them can communicate and take decisions.
-
-![Airflow Architecture](/imgs/airflow_arch.png)
 
 The heart of Airflow is arguably the scheduler, as this is where most of the magic happens that determines when and how your pipelines are executed. At a high level, the scheduler runs through the following steps.
 
@@ -248,6 +250,18 @@ There are many operators which help us to map our code. Few of them are
 
 ## **`Scheduler`**
 
+## Cron based schedule
+
+```
+┌─────── minute (0 - 59)
+│ ┌────── hour (0 - 23)
+│ │ ┌───── day of the month (1 - 31)
+│ │ │ ┌───── month (1 - 12)
+│ │ │ │ ┌──── day of the week (0 - 6) (Sunday to Saturday;
+│ │ │ │ │      7 is also Sunday on some systems)
+* * * * *
+
+```
 
 ## **`Executors`**
 
@@ -360,18 +374,7 @@ For example
 - Pool your resources : All task instances in the DAG use a pooled connection to the DWH by specifying the pool parameter. 
 - Manage login details in one place : Connection settings are maintained in the Admin menu.
 - Sense when to start a task : The processing of dimensions and facts have external task sensors which wait until all processing of external DAGs have finished up to the required day.
-## Cron based schedule
 
-```
-┌─────── minute (0 - 59)
-│ ┌────── hour (0 - 23)
-│ │ ┌───── day of the month (1 - 31)
-│ │ │ ┌───── month (1 - 12)
-│ │ │ │ ┌──── day of the week (0 - 6) (Sunday to Saturday;
-│ │ │ │ │      7 is also Sunday on some systems)
-* * * * *
-
-```
 
 check this website to generate cron expression - https://www.freeformatter.com/cron-expression-generator-quartz.html
 
