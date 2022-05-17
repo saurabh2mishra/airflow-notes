@@ -40,14 +40,14 @@ where
 - Arrow `-->` represents processing direction and depencies to check on what basis next action will be triggered.
 
 
-## Ok, so why should we use Airflow?
+### **Ok, so why should we use Airflow?**
 
 - If you like *`Everything As Code`* and **everything** mean everything including your configurations 
 . This helps to create any complex level pipeline to solve the problem.
 - If you like open source because mostly everything you can get as as inbuilt operator or executors.
 - `Backfilling` features. It enables you to reprocess historical data.
 
-## And, why shouldn't you use Airflow?
+### **And, why shouldn't you use Airflow?**
 - If you want to build a streaming data pipeline. 
 
 ---
@@ -202,13 +202,169 @@ download_data >> persist_to_storage  # >> is bit shift operator in python which 
  ```
 
  That's it.  We have successfully created our first DAG.
+
+
+
+## How to create tasks flow?
+
+Let's take this example.
+
+![example_dag](/imgs/dag_example.png)
+
+we see there are two color code have been used in above image.
+
+light red  - shows branch flow (two or more flows) i.e. **branch_1, branch_2**
+
+light green - normal task for different purpose. i.e. **false_1, false_2, true_2 etc.**
+
+Now, without worrying about code, let's create the task flow to represneting above structure.
+
+1- Lower workflow from **branch_1**
+
+ `branch_1 >> true_1 >> join_1`
+
+2- Upper workflow from **branch_1**
+
+- upper flows has two section. First part goes till `branch_2`
+    
+`branch_1 >> false_1 >> branch_2`
+- and then at branch_2, two parallel execution happens and goes till false_3
  
-But now you might be thinking from where we got `PythonOperator`, `DAG`, and how `>>` bit shift opertaor is working as task execution order. To understand it we will see the important `modules ` which is provided by Airflow.
+ `branch_2 >> false_2 >> join_2 >> false_3`
+
+`branch_2 >> true_2 >> join_2 >> false_3`
+
+Since false_2 and true_2 is happening in parallel, so we can merge them (put them in a list) in this way 
+
+`branch_2 >>` **[true_2, false_2]** `>> join_2 >> false_3`
+
+and finally we can merge above steps like this 
+
+`branch_1 >> false_1 >> branch_2 >> [true_2, false_2] >> join_2 >> false_3 >> join_1`
+
+**So we have got these two from step 1 and step 2**
+
+`branch_1 >> true_1 >> join_1`
+    
+
+`branch_1 >> false_1 >> branch_2 >> [true_2, false_2] >> join_2 >> false_3 >> join_1`
+ 
+and that's represent the execution of task or a DAG.
+
+### **How bit shift operator (>> or <<) defines task dependency?**
+The __ rshift __ and __ lshift __ methods of the BaseOperator class implements the Python right shift logical operator in the context of setting a task or a DAG downstream of another.
+See the implementation [here](https://github.com/apache/airflow/blob/5355909b5f4ef0366e38f21141db5c95baf443ad/airflow/models.py#L2569).
+
+So, **`bit shift`** been used as syntactic sugar for  `set_upstream` (<<) and `set_downstream` (>>) tasks.
+
+For example 
+`task1 >> task2` is same as `task2 << task1` is same as `task1.set_downstream(task2)` is same as  `task1.set_upstream(task2)`
+
+**`bit shift`** plays crucial roles to build relationships among the tasks.
+
+### **Effective Task Design**
+
+The created task should follow
+
+### 1- Atomicity 
+
+Means `either all occur or nothing occurs.` So each task should do only one activity and if not the case then split the functionality into individual task.
+
+### 2- Idempotency
+
+`
+An Airflow task is said to be idempotent if calling the same task multiple times with the same inputs has no additional effect. This means that rerunning a task without changing the inputs should not change the overall output.
+`
+
+**for data load** : It can be make  idempotent by checking for existing results or making sure that previous results are overwritten by the task.
+
+**for database load** : `upsert` can be used to overwrite  or update previous work done on the tables.
+
+
+### 3-  Back Filling the previous task
+
+The DAG class can be initiated with property `catchup`
+
+if `catchup=False` ->  Airflow starts processing from the `current` interval.
+
+if `catchup=True` -> This is default property and Airflow starts processing from the `past` interval.
+
+## Templating tasks using the Airflow context
+
+All operators load `context` a pre-loaded variable to supply most used variables during DAG run. A python examples can be shown here 
+
+```python
+from urllib import request
+ 
+import airflow
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+ 
+dag = DAG(
+    dag_id="showconext",
+    start_date=airflow.utils.dates.days_ago(1),
+    schedule_interval="@hourly",
+)
+ 
+def _show_context(**context):
+    """
+    context here contains these preloaded items 
+    to pass in dag during runtime.
+
+    Airflow’s context dictionary can be found in the
+    get_template_context method, in Airflow’s models.py.
+    
+    {
+    'dag': task.dag,
+    'ds': ds,
+    'ds_nodash': ds_nodash,
+    'ts': ts,
+    'ts_nodash': ts_nodash,
+    'yesterday_ds': yesterday_ds,
+    'yesterday_ds_nodash': yesterday_ds_nodash,
+    'tomorrow_ds': tomorrow_ds,
+    'tomorrow_ds_nodash': tomorrow_ds_nodash,
+    'END_DATE': ds,
+    'end_date': ds,
+    'dag_run': dag_run,
+    'run_id': run_id,
+    'execution_date': self.execution_date,
+    'prev_execution_date': prev_execution_date,
+    'next_execution_date': next_execution_date,
+    'latest_date': ds,
+    'macros': macros,
+    'params': params,
+    'tables': tables,
+    'task': task,
+    'task_instance': self,
+    'ti': self,
+    'task_instance_key_str': ti_key_str,
+    'conf': configuration,
+    'test_mode': self.test_mode,
+    }
+    """
+   start = context["execution_date"]        
+   end = context["next_execution_date"]
+   print(f"Start: {start}, end: {end}")
+ 
+ 
+show_context = PythonOperator(
+   task_id="show_context", 
+   python_callable=_show_context, 
+   dag=dag
+)
+```
+ 
+
+But now you might be thinking from where we got `PythonOperator`, `DAG`, and how `>>` bit shift opertaor is working to create a flow of task execution. To understand it we will see the important `modules ` which is provided by Airflow.
 
 -----
 
 
 ## Airflow's Module Structure
+
+[an image of graph and then example]
+
 
 
 Airflow has standard module structure. It has all it's [important packages](https://airflow.apache.org/docs/apache-airflow/2.0.0/_modules/index.html) under airflow. Few of the important module structures are here
@@ -301,10 +457,10 @@ For instance,
 - `S3KeySensor` S3 Key sensors are used to wait for a specific file or directory to be available on an S3 bucket.
 
 
-## What if something which I'm interested is not present in any of the module?
+## *What if something which I'm interested is not present in any of the module?*
 
-If something is not there, then you can write your own custom opertor, sensor, executor, hook or anything which you want.
-Airflow provides Base classes which anyone can inherit to write their own custom stuff. e.g. If I want to write a cutom operator, sensor, hook then this could be the template.
+You didn't found right operator, executors, sensors or hooks? No worries, you can write your own custom stuffs.
+Airflow provides Base classes which we can inherit to write our own custom classes.
 
 ```python
 
@@ -346,18 +502,6 @@ class MyCustomHook(BaseHook):
 
 ```
 
-### How bit shift operator (>> or <<) defines task dependency?
-The __ rshift __ and __ lshift __ methods of the BaseOperator class implements the Python right shift logical operator in the context of setting a task or a DAG downstream of another.
-See the implementation [here](https://github.com/apache/airflow/blob/5355909b5f4ef0366e38f21141db5c95baf443ad/airflow/models.py#L2569).
-
-So, **`bit shift`** been used as syntactic sugar for  `set_upstream` (<<) and `set_downstream` (>>) tasks.
-
-For example 
-`task1 >> task2` is same as `task2 << task1` is same as `task1.set_downstream(task2)` is same as  `task1.set_upstream(task2)`
-
-**`bit shift`** plays crucial roles to build relationships among the tasks.
-
-
 # Best Practices
 
  - Write clean DAG and stick with one principle to create your DAG. Generally, in two way we create our DAG
@@ -378,96 +522,6 @@ For example
 
 check this website to generate cron expression - https://www.freeformatter.com/cron-expression-generator-quartz.html
 
-# Best Practices for the task design
-
-### 1- Atomicity 
-
-`either all occur or nothing occurs.` So each task should do only one activity and if not the case then split the functionality into individual task.
-
-### 2- Idempotency
-
-`
-Another important property to consider when writing Airflow tasks is idempotency. Tasks are said to be idempotent if calling the same task multiple times with the same inputs has no additional effect. This means that rerunning a task without changing the inputs should not change the overall output.
-`
-
-**for data load** : It can be make  idempotent by checking for existing results or making sure that previous results are overwritten by the task.
-
-**for database load** : `upsert` can be used to overwrite  or update previous work done on the tables.
-
-
-# Back Filling the previous task
-
-The DAG class can be initiated with property `catchup`
-
-if `catchup=False` ->  Airflow starts processing from the `current` interval.
-
-if `catchup=True` -> This is default property and Airflow starts processing from the `past` interval.
-
-# Templating tasks using the Airflow context
-
-All operators load `context` a pre-loaded variable to supply most used variables during DAG run. A python examples can be shown here 
-
-```python
-from urllib import request
- 
-import airflow
-from airflow import DAG
-from airflow.operators.python import PythonOperator
- 
-dag = DAG(
-    dag_id="stocksense",
-    start_date=airflow.utils.dates.days_ago(1),
-    schedule_interval="@hourly",
-)
- 
-def _print_context(**context):
-    """
-    context here contains these preloaded items 
-    to pass in dag during runtime.
-
-    Airflow’s context dictionary can be found in the
-    get_template_context method, in Airflow’s models.py.
-    
-    {
-    'dag': task.dag,
-    'ds': ds,
-    'ds_nodash': ds_nodash,
-    'ts': ts,
-    'ts_nodash': ts_nodash,
-    'yesterday_ds': yesterday_ds,
-    'yesterday_ds_nodash': yesterday_ds_nodash,
-    'tomorrow_ds': tomorrow_ds,
-    'tomorrow_ds_nodash': tomorrow_ds_nodash,
-    'END_DATE': ds,
-    'end_date': ds,
-    'dag_run': dag_run,
-    'run_id': run_id,
-    'execution_date': self.execution_date,
-    'prev_execution_date': prev_execution_date,
-    'next_execution_date': next_execution_date,
-    'latest_date': ds,
-    'macros': macros,
-    'params': params,
-    'tables': tables,
-    'task': task,
-    'task_instance': self,
-    'ti': self,
-    'task_instance_key_str': ti_key_str,
-    'conf': configuration,
-    'test_mode': self.test_mode,
-    }
-    """
-   start = context["execution_date"]        
-   end = context["next_execution_date"]
-   print(f"Start: {start}, end: {end}")
- 
- 
-print_context = PythonOperator(
-   task_id="print_context", 
-   python_callable=_print_context, 
-   dag=dag
-)
-```
 
 ## Running docker images as a root
 
