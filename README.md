@@ -9,7 +9,7 @@ Please feel free to contribute any items that you think is missing or misleading
 - [Airflow Architecture](#airflow-architecture)
 - [Installing Airflow](#installing-airflow)
 - [Fundamentals of Airflow](#fundamentals-of-airflow)
-     - [Airflow's module structure](#airflow-module-strcutrure)
+     - [Airflow's Module Structure](#airflow-module-strcutrure)
      - [Workloads](#workloads)
         - [Operators](#operators)
         - [Scheduler](#scheduler)
@@ -360,8 +360,7 @@ But now you might be thinking from where we got `PythonOperator`, `DAG` etc. To 
 
 -----
 
-
-## Airflow's Module Structure
+# Airflow's Module Structure
 
 Airflow has standard module structure. It has all it's [important packages](https://airflow.apache.org/docs/apache-airflow/2.0.0/_modules/index.html) under airflow. Few of the important module structures are here
 
