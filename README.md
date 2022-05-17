@@ -65,16 +65,6 @@ We can see above components when we do install Airflow and implicitly Airflow in
 - `DAG directory`, to keep all dag in place to be read by scheduler and executor.
 - `Metadata Database`, used by scheduler, executor, and webseerver to store state, so that all of them can communicate and take decisions.
 
-The heart of Airflow is arguably the scheduler, as this is where most of the magic happens that determines when and how your pipelines are executed. At a high level, the scheduler runs through the following steps.
-
-1. Once users have written their workflows as DAGs, the files containing these DAGs are read by the scheduler to extract the corresponding tasks, dependencies, and schedule interval of each DAG.
-
-2. For each DAG, the scheduler then checks whether the schedule interval for the DAG has passed since the last time it was read. If so, the tasks in the DAG are scheduled for execution.
-
-3. For each scheduled task, the scheduler then checks whether the dependencies (= upstream tasks) of the task have been completed. If so, the task is added to the execution queue.
-
-4. The scheduler waits for several moments before starting a new loop by jumping back to step 1.
-
 For now, ite enough on architecture. Let's move to next part.
 
 ---
@@ -400,6 +390,19 @@ There are many operators which help us to map our code. Few of them are
 *and there many more operators do exits.* See the full [operators list](https://airflow.apache.org/docs/apache-airflow/stable/_api/airflow/operators/index.html) in official documentation.
 
 ## **`Scheduler`**
+
+Scheduler is the crucial components of Airflow because here most of the magic happens that determines when and how your pipelines are executed. At a high level, the scheduler runs through the following steps.
+
+1. Once users have written their workflows as DAGs, the files containing these DAGs are read by the scheduler to extract the corresponding tasks, dependencies, and schedule interval of each DAG.
+
+2. For each DAG, the scheduler then checks whether the schedule interval for the DAG has passed since the last time it was read. If so, the tasks in the DAG are scheduled for execution.
+
+3. For each scheduled task, the scheduler then checks whether the dependencies (= upstream tasks) of the task have been completed. If so, the task is added to the execution queue.
+
+4. The scheduler waits for several moments before starting a new loop by jumping back to step 1.
+
+👉 To start a scheduler, just run `airflow scheduler` command. 
+
 
 ## Cron based schedule
 
