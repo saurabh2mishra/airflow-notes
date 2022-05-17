@@ -65,7 +65,7 @@ We can see above components when we do install Airflow and implicitly Airflow in
 - `DAG directory`, to keep all dag in place to be read by scheduler and executor.
 - `Metadata Database`, used by scheduler, executor, and webseerver to store state, so that all of them can communicate and take decisions.
 
-For now, ite enough on architecture. Let's move to next part.
+For now, this is enough on architecture. Let's move to next part.
 
 ---
 ## Installing Airflow
@@ -242,7 +242,7 @@ and finally we can merge above steps like this
 and that's represent the execution of task or a DAG.
 
 ### **How bit shift operator (>> or <<) defines task dependency?**
-The __ rshift __ and __ lshift __ methods of the BaseOperator class implements the Python right shift logical operator in the context of setting a task or a DAG downstream of another.
+The __ rshift __ and __ lshift __ methods of the BaseOperator class implements the Python bit shift logical operator in the context of setting a task or a DAG downstream of another.
 See the implementation [here](https://github.com/apache/airflow/blob/5355909b5f4ef0366e38f21141db5c95baf443ad/airflow/models.py#L2569).
 
 So, **`bit shift`** been used as syntactic sugar for  `set_upstream` (<<) and `set_downstream` (>>) tasks.
@@ -250,7 +250,7 @@ So, **`bit shift`** been used as syntactic sugar for  `set_upstream` (<<) and `s
 For example 
 `task1 >> task2` is same as `task2 << task1` is same as `task1.set_downstream(task2)` is same as  `task1.set_upstream(task2)`
 
-**`bit shift`** plays crucial roles to build relationships among the tasks.
+This operator plays important roles to build relationships among the tasks.
 
 ### **Effective Task Design**
 
@@ -403,8 +403,19 @@ Scheduler is the crucial components of Airflow because here most of the magic ha
 
 👉 To start a scheduler, just run `airflow scheduler` command. 
 
+In Airflow while defining the DAG, we provide few options to let scheduler know when jobs are required to be triggered.
 
-## Cron based schedule
+`start_date` -> when to start the DAG.
+
+`end_date` -> whne to stop the DAG
+
+`schedule_interval` -> Time interval for the subsquent run. hourly, daily, minutes etc
+
+`depends_on_past` -> Boolean to decide from when DAG will execute.
+
+`retry_delay` -> time duration for next retry. It accepts `datetime` object. e.g. for 2 mins we will write timedelta(minutes=2)
+
+Airflow scheduler works on the principle of **`Cron based job`** execution. Below is the cron presentation.
 
 ```
 ┌─────── minute (0 - 59)
@@ -416,6 +427,11 @@ Scheduler is the crucial components of Airflow because here most of the magic ha
 * * * * *
 
 ```
+Sometimes if you haven't work before on unix based cron job scheduler then its is tough to know how to write them exactly
+(it's also tricky for experience developer as well).
+
+Check this website to generate cron expression - https://www.freeformatter.com/cron-expression-generator-quartz.html
+
 
 ## **`Executors`**
 
@@ -516,9 +532,6 @@ class MyCustomHook(BaseHook):
 - Pool your resources : All task instances in the DAG use a pooled connection to the DWH by specifying the pool parameter. 
 - Manage login details in one place : Connection settings are maintained in the Admin menu.
 - Sense when to start a task : The processing of dimensions and facts have external task sensors which wait until all processing of external DAGs have finished up to the required day.
-
-
-check this website to generate cron expression - https://www.freeformatter.com/cron-expression-generator-quartz.html
 
 
 ## Running docker images as a root
