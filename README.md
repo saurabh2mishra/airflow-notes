@@ -205,7 +205,7 @@ download_data >> persist_to_storage  # >> is bit shift operator in python which 
 
 
 
-## How to create tasks flow?
+## How to create a bit complex tasks flow?
 
 Let's take this example.
 
