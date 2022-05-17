@@ -363,10 +363,6 @@ But now you might be thinking from where we got `PythonOperator`, `DAG` etc. To 
 
 ## Airflow's Module Structure
 
-[an image of graph and then example]
-
-
-
 Airflow has standard module structure. It has all it's [important packages](https://airflow.apache.org/docs/apache-airflow/2.0.0/_modules/index.html) under airflow. Few of the important module structures are here
 
 - `airflow` - For DAG and other base API.
