@@ -356,7 +356,7 @@ show_context = PythonOperator(
 ```
  
 
-But now you might be thinking from where we got `PythonOperator`, `DAG`, and how `>>` bit shift opertaor is working to create a flow of task execution. To understand it we will see the important `modules ` which is provided by Airflow.
+But now you might be thinking from where we got `PythonOperator`, `DAG` etc. To understand it we will see the important `modules ` which is provided by Airflow.
 
 -----
 
