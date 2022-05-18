@@ -580,12 +580,12 @@ class MyCustomHook(BaseHook):
 - Create the tag and use it for quick look to groups the tasks in monitoring.
 - Always search for existing inbuilt airflow operators, hooks or sensors before creating your own cutom stuff.
 - Data Quality and Testing is often gets overlooked. So make sure you use a standard for your code base.
-- Follow load strategies - incremental, scd types in your code to unnecessary data load.
+- Follow load strategies - incremental, scd types in your code to avoid unnecessary data load.
 - If possible, create a framework for DAG generations. A meta wrapper. Checkout this [repo](https://github.com/ajbosco/dag-factory).
-- Specify configuration details once : The place where SQL templates are is configured as an Airflow Variable and looked up as a global parameter when the DAG is instantiated.
+- Specify configuration details once - The place where SQL templates are is configured as an Airflow Variable and looked up as a global parameter when the DAG is instantiated.
 - Pool your resources : All task instances in the DAG use a pooled connection to the DWH by specifying the pool parameter. 
-- Manage login details in one place : Connection settings are maintained in the Admin menu.
-- Sense when to start a task : The processing of dimensions and facts have external task sensors which wait until all processing of external DAGs have finished up to the required day.
+- Manage login details in one place - Connection settings are maintained in the Admin menu.
+- Sense when to start a task - The processing of dimensions and facts have external task sensors which wait until all processing of external DAGs have finished up to the required day.
 
 
 ## Running docker images as a root
