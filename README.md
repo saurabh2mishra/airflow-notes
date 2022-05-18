@@ -10,6 +10,9 @@ Please feel free to contribute any items that you think is missing or misleading
 - [Installing Airflow](#installing-airflow)
 - [Fundamentals of Airflow](#fundamentals-of-airflow)
      - [Airflow's Module Structure](#airflow-module-strcutrure)
+     - [Effective Task Design](#effective-task-design)
+     - [Runtime Variables](#runtime-variables)
+     - [Templating fields and scripts](#templating-fields-and-scripts)
      - [Workloads](#workloads)
         - [Operators](#operators)
         - [Scheduler](#scheduler)
@@ -279,7 +282,7 @@ if `catchup=False` ->  Airflow starts processing from the `current` interval.
 
 if `catchup=True` -> This is default property and Airflow starts processing from the `past` interval.
 
-## Templating tasks using the Airflow context
+### **Runtime Variables**
 
 All operators load `context` a pre-loaded variable to supply most used variables during DAG run. A python examples can be shown here 
 
@@ -344,7 +347,25 @@ show_context = PythonOperator(
    dag=dag
 )
 ```
- 
+Those above variables pre-loaded under `context` can be used anywhere in the operator. *Dynamic refrence* happens in `Jinja templating` way.
+
+e.g. `{{ds}}, {{next_ds}}, {{dag_run}}`
+
+## **Templating fields and scripts**
+
+Templates cannot be applied to all arguments of an operator. Two attributes in the BaseOperator define limitations on templating.
+
+`template_fields`: Holds the list of variables which are templateable
+
+`template_ext`: Contains a list of file extensions that can be read and templated at runtime
+
+#TODO.
+
+**Example of DAG which uses Airflow context for templating**
+
+Let's take an example to showcase the power of templating
+
+
 
 But now you might be thinking from where we got `PythonOperator`, `DAG` etc. To understand it we will see the important `modules ` which is provided by Airflow.
 
