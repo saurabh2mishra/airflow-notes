@@ -444,17 +444,17 @@ There are two types of executors
 
 **`Local Executors`**
 
-- [Debug Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/debug.html)
-- [Local Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/local.html)
-- [Sequential Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/sequential.html)
+- [Debug Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/debug.html)- The DebugExecutor is a debug tool and can be used from IDE. It is a single process executor that queues task and executes them.
+- [Sequential Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/sequential.html) - Default executor and runs within scheduler. Apart from this it executes one task instance at a time which eventually make it not good candidate for production.
+- [Local Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/local.html) - Run within scheduler and execute multiple tasks instance at a time. Again not good candidate for production as it doesn't scale.
 
 **`Remote Executors`**
 
-- [Celery Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/celery.html) - for scaling the workers. Helpful in parallelization.
-- [CeleryKubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/celery_kubernetes.html)
-- [Dask Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/dask.html)
-- [Kubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/kubernetes.html)
-- [LocalKubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/local_kubernetes.html)
+- [Celery Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/celery.html) - Run tasks on dedicated machines(workers). It uses distributed task queue to distribiute loads to different workers to parallelize work. It horizonatly scale which makes it fault tolerant and good candidate for production.
+- [Kubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/kubernetes.html) - Run tasks in dedicated POD(worker) and kubernetes APIs get used to manage the POD.It scales effeciently and very good candidate for production.
+    - [LocalKubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/local_kubernetes.html) - Local kubernetes executor.
+- [CeleryKubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/celery_kubernetes.html) - It allows users to run simultaneously a CeleryExecutor and a KubernetesExecutor. An executor is chosen to run a task based on the task's queue. Choice of this executor is only needed in [few cases](https://airflow.apache.org/docs/apache-airflow/stable/executor/celery_kubernetes.html).
+- [Dask Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/dask.html) -Dask clusters can be run on a single machine or on remote networks.
 
 ## **`Hooks`**
 
@@ -477,7 +477,6 @@ You didn't found right operator, executors, sensors or hooks? No worries, you ca
 Airflow provides Base classes which we can inherit to write our own custom classes.
 
 ```python
-
 from airflow.models import BaseOperator
 from airflow.sensors.base import BaseSensorOperator
 from airflow.hooks.base_hook import BaseHook
