@@ -110,7 +110,7 @@ Now, we are ready to go for the next step.
 
 ## Starting Docker Airflow project
 
-`docker-compose up --build`
+👉 `docker-compose up --build`
 
 Above command starts a docker environment and runbelow services as well
 - `Webserver`
@@ -125,7 +125,7 @@ From terminal, you can also run `docker ps ` to check the processes which are up
 
 To stop and delete containers, delete volumes with database data and download images, run:
 
-`docker-compose down --volumes --rmi all`
+👉 `docker-compose down --volumes --rmi all`
 
 ---
 
