@@ -359,15 +359,48 @@ Templates cannot be applied to all arguments of an operator. Two attributes in t
 
 `template_ext`: Contains a list of file extensions that can be read and templated at runtime
 
-#TODO.
+See this example for those two fields declaration
+
+```python
+class BashOperator(BaseOperator):
+    template_fields = ('bash_command', 'env') # defines which fields are templateable
+    template_ext = ('.sh', '.bash')  # defines which file extensions are templateable
+
+    def __init__(
+        self,
+        *,
+        bash_command,
+        env: None,
+        output_encoding: 'utf-8',
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.bash_command = bash_command  # templateable (can also give path to .sh or .bash script)
+        self.env = env  # templateable
+        self.output_encoding = output_encoding  # not templateable
+```
 
 **Example of DAG which uses Airflow context for templating**
 
 Let's take an example to showcase the power of templating
 
+```python
+from datetime import datetime
 
+BashOperator(
+    task_id="print_now",
+    bash_command="echo It is currently {{ macros.datetime.now() }}", 
+)
+```
+👉 **`Note`**  
+
+if you see here we used **macro** to call datetime.now(). If we don't use macro it will raise `jinja2.exceptions.UndefinedError: 'datetime' is undefined` exception.
+
+Check here for the [macro list](https://airflow.apache.org/docs/apache-airflow/1.10.3/macros.html).
 
 But now you might be thinking from where we got `PythonOperator`, `DAG` etc. To understand it we will see the important `modules ` which is provided by Airflow.
+
+👉 This topic is covered in much detailed in [this blog](https://www.astronomer.io/guides/templating/).
 
 -----
 
@@ -490,6 +523,7 @@ For instance,
     
 - `ExternalTaskSensor` waits on another task (in a different DAG) to complete execution.
 - `S3KeySensor` S3 Key sensors are used to wait for a specific file or directory to be available on an S3 bucket.
+- `NamedHivePartitionSensor` - Waits for a set of partitions to show up in Hive. 
 
 
 ## *What if something which I'm interested is not present in any of the module?*
@@ -538,11 +572,11 @@ class MyCustomHook(BaseHook):
 
 # Best Practices
 
- - Write clean DAG and stick with one principle to create your DAG. Generally, in two way we create our DAG
-    - with context manager 
-    - without context manager
-- Keep computation code and DAG definition separate. Everytime DAG loads it recompute, hence more time it took to load.
-- Don't hardocde or leave your senstive connection information in the code. Manage it at central level in secure way.
+ - Write clean DAG and stick with either of the one way to create your DAG (with context manager 
+    or without context manager).
+- Stick to a better naming convention while writitng your task name. Be explict and logical.
+- Keep computation code (SQL, script, python code etc) and DAG definition separate. Everytime DAG loads it recompute, hence more time it took to load.
+- Don't hardocde either constant value or any senstive connection information in the code. Manage it in config file or at central level in secure way. 
 - Create the tag and use it for quick look to groups the tasks in monitoring.
 - Always search for existing inbuilt airflow operators, hooks or sensors before creating your own cutom stuff.
 - Data Quality and Testing is often gets overlooked. So make sure you use a standard for your code base.
