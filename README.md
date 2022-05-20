@@ -9,9 +9,9 @@ Please feel free to contribute any items that you think is missing or misleading
 - [Airflow Architecture](#airflow-architecture)
 - [Installing Airflow](#installing-airflow)
 - [Fundamentals of Airflow](#fundamentals-of-airflow)
-     - [Define your Task and DAG](#define-your-Task-and-AG)
-     - [Airflow's Module Structure](#airflow-module-strcutrure)
-     - [How to create a bit complex tasks flow?](#How-to-create-a-bit-complex-tasks-flow)
+     - [Define your Task and DAG](#define-your-task-and-dag)
+     - [Airflow Module Structure](#airflow-module-structure)
+     - [How to create a bit complex tasks flow?](#how-to-create-a-bit-complex-tasks-flow)
      - [Effective Task Design](#effective-task-design)
      - [Runtime Variables](#runtime-variables)
      - [Templating fields and scripts](#templating-fields-and-scripts)
@@ -23,6 +23,7 @@ Please feel free to contribute any items that you think is missing or misleading
         - [sensors](#sensors)
 - [Best Practices](#best-practices)
 - [Where to go from here?](#where-to-go-from-here)
+- [Reference](#reference)
      
 ---
 ## Introduction
@@ -425,7 +426,7 @@ But now you might be thinking from where we got `PythonOperator`, `DAG` etc. To 
 
 -----
 
-## Airflow's Module Structure
+## Airflow Module Structure
 
 Airflow has standard module structure. It has all it's [important packages](https://airflow.apache.org/docs/apache-airflow/2.0.0/_modules/index.html) under airflow. Few of the important module structures are here
 
@@ -617,10 +618,11 @@ So, let's create a project and learn it by doing 💪
 
 Checkout this github repo for the project. [Airflow - Chapel Hill Survey Data Analysis](githublink)
 
-Airflow community is very active and many contributors across the globe are enriching and creating several packages and utilities to developers life easy. To be in touch with new release it is always good to follow the community and people on twitter and github. 
-Checkout the reference section for more details.
+# Reference
 
-## Reference
+Airflow community is very active and many contributors across the globe are enriching and creating several packages and utilities to make developers life easy. To be in touch with new releases it is always good to follow the community and people on twitter and github. 
+Most of the details in this notes is taken from below links. Checkout it for more details.
+
 - [Data Pipelines with Apache Airflow ](https://www.manning.com/books/data-pipelines-with-apache-airflow)(Highly recommended)
 - [Source code](https://github.com/apache/airflow/) (Apache Airflow github)
 - [Documentation](https://airflow.apache.org/) (official website)
