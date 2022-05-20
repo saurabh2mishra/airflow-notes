@@ -9,7 +9,9 @@ Please feel free to contribute any items that you think is missing or misleading
 - [Airflow Architecture](#airflow-architecture)
 - [Installing Airflow](#installing-airflow)
 - [Fundamentals of Airflow](#fundamentals-of-airflow)
+     - [Define your Task and DAG](#define-your-Task-and-AG)
      - [Airflow's Module Structure](#airflow-module-strcutrure)
+     - [How to create a bit complex tasks flow?](#How-to-create-a-bit-complex-tasks-flow)
      - [Effective Task Design](#effective-task-design)
      - [Runtime Variables](#runtime-variables)
      - [Templating fields and scripts](#templating-fields-and-scripts)
@@ -194,11 +196,30 @@ download_data >> persist_to_storage  # >> is bit shift operator in python which 
 
  ```
 
- That's it.  We have successfully created our first DAG.
+ That's it. We have successfully created our first DAG.
 
+### **Define your Task and DAG**
 
+Airflow provides three ways to define your DAG
 
-## How to create a bit complex tasks flow?
+1. Classical 
+2. with context manager
+2. Decorators 
+
+It doesn't matter which way you define your workflow but sticking to only one helps to debug and review the code base. Mixing different defintion can perplex the code (though its personal choice)
+
+```python
+# Classical 
+```
+```python
+# with conext manager 
+```
+
+```python
+# Decorators 
+```
+
+### **How to create a bit complex tasks flow?**
 
 Let's take this example.
 
@@ -587,18 +608,17 @@ class MyCustomHook(BaseHook):
 - Manage login details in one place - Connection settings are maintained in the Admin menu.
 - Sense when to start a task - The processing of dimensions and facts have external task sensors which wait until all processing of external DAGs have finished up to the required day.
 
+# Where to go from here?
 
-## Running docker images as a root
+Important part of learning anything is to create a project. When we build something then we understand the working principle and their terminologies. However, we have touched almost everything which we need to work on Airflow project but there are still many concepts which we might need when we start building the real project. 
+For example dynamic dag and task creation (dag factory), deployment, monitoring etc. 
 
-`docker run --rm -it -u root --entrypoint bash apache/airflow:2.2.4`
+So, let's create a project and learn it by doing 💪 
 
+Checkout this github repo for the project. [Airflow - Chapel Hill Survey Data Analysis](githublink)
 
-## Running docker images as a normal user
-
-`docker exec -it <image_id> bash`
-
-*sudo apt-get update && sudo apt-get install tk*
-
+Airflow community is very active and many contributors across the globe are enriching and creating several packages and utilities to developers life easy. To be in touch with new release it is always good to follow the community and people on twitter and github. 
+Checkout the reference section for more details.
 
 ## Reference
 - [Data Pipelines with Apache Airflow ](https://www.manning.com/books/data-pipelines-with-apache-airflow)(Highly recommended)
@@ -607,3 +627,4 @@ class MyCustomHook(BaseHook):
 - [Confluence page](https://cwiki.apache.org/confluence/display/AIRFLOW/Airflow+Home)
 - [![Twitter Follow](https://img.shields.io/twitter/follow/apacheairflow?style=social)](https://twitter.com/ApacheAirflow)
 - [Slack workspace](https://apache-airflow-slack.herokuapp.com/)
+
