@@ -221,13 +221,38 @@ It doesn't matter which way you define your workflow but sticking to only one he
 
 ```python
 # Classical 
+
+import pendulum
+from airflow import DAG
+from airflow.operators.dummy import DummyOperator
+
+dag = DAG("classical_dag", start_date=pendulum.datetime(2022, 5, 15, tz="UTC"),
+             schedule_interval="@daily", catchup=False)
+
+op = DummyOperator(task_id="a-dummy-task", dag=dag)
+
 ```
 ```python
-# with conext manager 
+# with context manager 
+
+with DAG(
+    "context_manager_dag", start_date=pendulum.datetime(2022, 5, 15, tz="UTC"),
+    schedule_interval="@daily", catchup=False
+) as dag:
+    op = DummyOperator(task_id="a-dummy-task")
+
 ```
 
 ```python
 # Decorators 
+
+@dag(start_date=pendulum.datetime(2022, 5, 15, tz="UTC"),
+     schedule_interval="@daily", catchup=False)
+def generate_dag():
+    op = DummyOperator(task_id="a-dummy-task")
+
+dag = generate_dag()
+
 ```
 
 ### **How to create a bit complex tasks flow?**
