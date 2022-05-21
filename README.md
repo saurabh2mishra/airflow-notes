@@ -651,9 +651,9 @@ class MyCustomHook(BaseHook):
 # Where to go from here?
 
 An essential part of learning anything is to create a project. When we build something, we understand the working principle and its terminologies. However, we have touched almost everything we need to work on the Airflow project, but there are still many concepts we might need when we start building the actual project. 
-For example, dynamic dag and task creation (dag factory), deployment, monitoring etc. 
+For example, dynamic dag and task creation (dag factory), deployment, monitoring etc. (this is the #todo work)
 
-So, let's create a project and learn it by doing 💪 
+So, let's create a project and put our learning in action by doing it 💪 
 
 Check out this GitHub repo for the project. [Airflow - Chapel Hill Survey Data Analysis](https://github.com/saurabh2mishra/airflow-chesdata-analysis)
 
