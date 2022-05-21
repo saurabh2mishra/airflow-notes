@@ -655,7 +655,7 @@ For example, dynamic dag and task creation (dag factory), deployment, monitoring
 
 So, let's create a project and learn it by doing 💪 
 
-Check out this GitHub repo for the project. [Airflow - Chapel Hill Survey Data Analysis](GitHubLink)
+Check out this GitHub repo for the project. [Airflow - Chapel Hill Survey Data Analysis](https://github.com/saurabh2mishra/airflow-chesdata-analysis)
 
 # Reference
 
