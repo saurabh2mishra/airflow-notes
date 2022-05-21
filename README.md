@@ -6,7 +6,7 @@ However, before you jump and dig into it, there are two prerequisites.
 - 🔴 Python
 - 🔴 [Extract-Transform-Load aka ETL](https://en.wikipedia.org/wiki/Extract,_transform,_load)
  
-And the reason for those prerequisites is apparent - Either we build a report or machine learning project, ETL is a must for both, and since Airflow is written in Python, we can avoid it. 
+And the reason for those prerequisites is apparent - Either we build a report or machine learning project, ETL is a must for both, and since Airflow is written in Python, we cannot avoid it. 
 
 These notes would be enhanced in future for other features/topics. For the existing content, if you feel something is inaccurate or misleading 
 then please feel free to contribute or highlight.
