@@ -1,10 +1,10 @@
 [<img src="https://upload.wikimedia.org/wikipedia/commons/d/de/AirflowLogo.png" align="right">](https://airflow.apache.org/)
 
 This content I have created for my own learning. I have tried to put all concepts/jargons in a sequenctial flow to make our understaning of the Airflow clear and to the point.
-However, before you jump and dig into into, there are two <span style="color:red">prequistes</span> for it.
+However, before you jump and dig into into, there are two prequistes for it.
 
-- Python
-- [Extract-Transform-Load aka ETL](https://en.wikipedia.org/wiki/Extract,_transform,_load)
+- 🔴 Python
+- 🔴 [Extract-Transform-Load aka ETL](https://en.wikipedia.org/wiki/Extract,_transform,_load)
  
 and reason for those prerequistes is obvious - Either we create a report or machine learning project, ETL is must for both and since Airflow is written in Python so we can avoid it. 
 
