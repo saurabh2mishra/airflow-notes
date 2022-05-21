@@ -248,10 +248,10 @@ with DAG(
 
 @dag(start_date=pendulum.datetime(2022, 5, 15, tz="UTC"),
      schedule_interval="@daily", catchup=False)
-def generate_dag():
+def generate_decorator_dag():
     op = DummyOperator(task_id="a-dummy-task")
 
-dag = generate_dag()
+dag = generate_decorator_dag()
 
 ```
 
