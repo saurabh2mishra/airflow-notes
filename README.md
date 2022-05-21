@@ -639,6 +639,7 @@ class MyCustomHook(BaseHook):
 - Don't hardcode either constant value or any sensitive connection information in the code. Manage it in the config file or at the central level in a secure way. 
 - Create the tag and use it for a quick look to group the tasks in monitoring.
 - Always search for existing inbuilt airflow operators, hooks or sensors before creating your custom stuff.
+- XCOM is not for heavy data transfer.
 - Data Quality and Testing often get overlooked. So make sure you use a standard for your codebase.
 - Follow load strategies - incremental, scd types in your code to avoid unnecessary data load.
 - If possible, create a framework for DAG generations. A meta wrapper. Check out this [repo](https://github.com/ajbosco/dag-factory).
