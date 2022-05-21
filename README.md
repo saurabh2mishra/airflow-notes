@@ -1,6 +1,6 @@
 [<img src="https://upload.wikimedia.org/wikipedia/commons/d/de/AirflowLogo.png" align="right">](https://airflow.apache.org/)
 
-This content I have created for my learning. I have tried to put all concepts/jargon lucidly to make our understanding of the Airflow clear and to the point.
+This content I have created for my quick reference. I have tried to put all concepts/jargon lucidly to make our understanding of the Airflow clear and to the point.
 However, before you jump and dig into it, there are two prerequisites.
 
 - 🔴 Python
