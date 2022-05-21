@@ -1,8 +1,15 @@
 [<img src="https://upload.wikimedia.org/wikipedia/commons/d/de/AirflowLogo.png" align="right">](https://airflow.apache.org/)
 
+This content I have created for my own learning. I have tried to put all concepts/jargons in a sequenctial flow to make our understaning of the Airflow clear and to the point.
+However, before you jump and dig into into, there are two <span style="color:red">prequistes</span> for it.
 
-This content I have created for my own learning. I have tried to put all jargons in simple word to make our understanding clear and precise. 
-Please feel free to contribute any items that you think is missing or misleading.
+- Python
+- [Extract-Transform-Load aka ETL](https://en.wikipedia.org/wiki/Extract,_transform,_load)
+ 
+and reason for those prerequistes is obvious - Either we create a report or machine learning project, ETL is must for both and since Airflow is written in Python so we can avoid it. 
+
+This notes could be enhance in furture for other features/topics and for existing conent if you feel something is inaccurate or misleading 
+then please feel free to contribute or highlights.
 
 ## Contents
 - [Introduction](#Introduction)
@@ -38,8 +45,10 @@ It uses [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph) to create da
 
 A simplest DAG could be like this
 
-`task-read-data-from-some-endpoint --> task-write-to-storage` 
-
+```mermaid
+flowchart LR
+A[task-read-data-from-some-endpoint] --> |dependency| B[task-write-to-storage]
+```
 
 where 
 - `read-data-from-some-endpoint` & `write-to-storage`  - reprsent a task (unit of work)
@@ -118,7 +127,7 @@ Now, we are ready to go for the next step.
 
 👉 `docker-compose up --build`
 
-Above command starts a docker environment and runbelow services as well
+Above command starts a docker environment and run below services as well
 - `Webserver`
 - `Scheduler`
 - `Postgres database for metastore`
@@ -375,7 +384,7 @@ e.g. `{{ds}}, {{next_ds}}, {{dag_run}}`
 
 ## **Templating fields and scripts**
 
-Templates cannot be applied to all arguments of an operator. Two attributes in the BaseOperator define limitations on templating.
+Two attributes in the BaseOperator define what can we put in for templating.
 
 `template_fields`: Holds the list of variables which are templateable
 
@@ -629,4 +638,3 @@ Most of the details in this notes is taken from below links. Checkout it for mor
 - [Confluence page](https://cwiki.apache.org/confluence/display/AIRFLOW/Airflow+Home)
 - [![Twitter Follow](https://img.shields.io/twitter/follow/apacheairflow?style=social)](https://twitter.com/ApacheAirflow)
 - [Slack workspace](https://apache-airflow-slack.herokuapp.com/)
-
