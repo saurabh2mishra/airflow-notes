@@ -1,7 +1,7 @@
 [<img src="https://upload.wikimedia.org/wikipedia/commons/d/de/AirflowLogo.png" align="right">](https://airflow.apache.org/)
 
-This content I have created for my own learning. I have tried to put all concepts/jargons in a sequenctial flow to make our understaning of the Airflow clear and to the point.
-However, before you jump and dig into into, there are two prequistes for it.
+This content I have created for my own learning and I think it could be useful for others as well.I have tried to put all concepts/jargons in a sequenctial manner to make our understaning of the Airflow clear and to the point.
+However, before we jump and dig into it, there are two prequistes,
 
 - 🔴 Python
 - 🔴 [Extract-Transform-Load aka ETL](https://en.wikipedia.org/wiki/Extract,_transform,_load)
