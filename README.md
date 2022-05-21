@@ -70,12 +70,13 @@ So, we have at least an idea that Airflow is created to build the data pipelines
 
 ![Airflow Architecture](/imgs/airflow_arch.png)
 
-We can see the above components when we install Airflow, and implicitly Airflow installs them to facilitate the execution of pipelines. These components are 
+We can see the above components when we install Airflow, and implicitly Airflow installs them to facilitate the execution of pipelines. 
+These components are 
 
-`Scheduler` parses DAGS, checks their schedule interval and starts scheduling DAGs tasks for execution by passing them to airflow workers.
-- `Workers`, responsible for doing actual work. It picks up tasks and executes them.
-`Web server` presents a handy user interface to inspect, trigger, and debug the behaviour of DAGs and tasks.
 - `DAG directory`, to keep all dag in place to be read by scheduler and executor.
+- `Scheduler` parses DAGS, checks their schedule interval and starts scheduling DAGs tasks for execution by passing them to airflow workers.
+- `Workers`, responsible for doing actual work. It picks up tasks and executes them.
+- `Web server` presents a handy user interface to inspect, trigger, and debug the behaviour of DAGs and tasks.
 - `Metadata Database`, used by the scheduler, executor, and webserver to store state so that all of them can communicate and take decisions.
 
 For now, this is enough architecture. Let's move to the next part.
