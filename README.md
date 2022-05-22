@@ -24,10 +24,11 @@ then please feel free to contribute or highlight.
      - [Templating fields and scripts](#templating-fields-and-scripts)
      - [Workloads](#workloads)
         - [Operators](#operators)
+            - [Type of Operators](#type-of-operators)
         - [Scheduler](#scheduler)
         - [Executors](#executors)
         - [hooks](#hooks)
-        - [sensors](#sensors)
+- [Accessing Metadata Database](#accessing-metadata-database)
 - [Best Practices](#best-practices)
 - [Where to go from here?](#where-to-go-from-here)
 - [Reference](#reference)
@@ -491,10 +492,13 @@ This is the list of providers - [providers list](https://airflow.apache.org/docs
 
 Operators help run your function or any executable program.
 
+## **`Type of Operators`**
 
-### `Types of Operators`
+Primarily there are three types of Operators.
 
-There are many operators which help us to map our code. Few of them are
+**`(i) Operators`**
+
+Helps to trigger certain action. Few of them are
 - `PythonOperator` - To wrap a python callables/functions inside it.
 - `BashOperator` - To call your bash script or command. Within BashOperator we can also call any executable program. 
 - `DummyOperator` - to show a dummy task
@@ -502,6 +506,22 @@ There are many operators which help us to map our code. Few of them are
 - `EmailOperator` - To send an email (using SMTP configuration)
 
 *and there many more operators do exits.* See the full [operators list](https://airflow.apache.org/docs/apache-airflow/stable/_api/airflow/operators/index.html) in the official documentation.
+
+**`(ii) Sensors`**
+
+A particular type of operator whose purpose is to wait for an event to start the execution.
+For instance, 
+    
+- `ExternalTaskSensor` waits on another task (in a different DAG) to complete execution.
+- `S3KeySensor` S3 Key sensors are used to wait for a specific file or directory to be available on an S3 bucket.
+- `NamedHivePartitionSensor` - Waits for a set of partitions to appear in Hive. 
+
+**`(iii) Transfers`**
+
+Moves data from one location to another. e.g.
+
+- `MySqlToHiveTransfer` Moves data from MySql to Hive.
+- `S3ToRedshiftTransfer` load files from s3 to Redshift.
 
 ## **`Scheduler`**
 
@@ -576,16 +596,6 @@ A high-level interface to establish a connection with databases or other externa
 
 [List of different available hooks](https://airflow.apache.org/docs/apache-airflow/stable/_api/airflow/hooks/index.html?highlight=hooks#module-airflow.hooks)
 
-## **`Sensors`**
-
-A particular type of operator whose purpose is to wait for an event to start the execution.
-For instance, 
-    
-- `ExternalTaskSensor` waits on another task (in a different DAG) to complete execution.
-- `S3KeySensor` S3 Key sensors are used to wait for a specific file or directory to be available on an S3 bucket.
-- `NamedHivePartitionSensor` - Waits for a set of partitions to appear in Hive. 
-
-
 ## *What if something I'm interested in is not present in any of the modules?*
 
 You didn't find the right operator, executors, sensors or hooks? No worries, you can write your custom stuff.
@@ -629,6 +639,35 @@ class MyCustomHook(BaseHook):
         pass
 
 ```
+# Accessing Metadata Database
+
+Airflow Metadata database can be used for storing DAG configurations, tables, constants and IDs. It uses Key-Value pair to maintain these variables.
+Stores configuration (variables) can be accessed by `Variable`.
+
+```python
+# Suppose we have kept dag_config in metadata database in this format
+# dag_config = {"key1":"value1", "key2":["a", "b", "c"]}
+# then below is the way to retrive them in the dag
+get_dag_config = Variable.get("dag_config", deserialize_json=True)
+config1 = get_dag_config["key1"]
+config2 = get_dag_config["key2"]
+
+
+# If varibale is simply saved in this format key1 = value1, then we use 
+get_key1 = Variable.get("key1")
+```
+**Accessing via command line**
+
+```bash 
+# import variable json file
+docker-compose run --rm webserver airflow variables --import /usr/local/airflow/dags/config/dag_config.json
+
+# get value of key1
+docker-compose run --rm webserver airflow variables --get key1
+
+```
+
+
 
 # Best Practices
 
@@ -650,10 +689,14 @@ class MyCustomHook(BaseHook):
 
 # Where to go from here?
 
-An essential part of learning anything is to create a project. When we build something, we understand the working principle and its terminologies. However, we have touched almost everything we need to work on the Airflow project, but there are still many concepts we might need when we start building the actual project. 
-For example, dynamic dag and task creation (dag factory), deployment, monitoring etc. (this is the #todo work)
+An essential part of learning anything is to create a project. 
+When we build something, we understand the working principle and its terminologies the hard way. 
+We have touched almost everything which we need to work on any Airflow project
+but once we start coding, then again, we might need to come here to check the theory which we have covered above or
+if the complexity of the project demands some advanced concepts, then we also need to read them 
+for example, dynamic dag and task creation (dag factory), deployment, monitoring etc. (this is the #todo work)
 
-So, let's create a project and put our learning in action by doing it 💪 
+But for now, we are set to go. So, let's create a project and put our learning into action 💪 
 
 Check out this GitHub repo for the project. [Airflow - Chapel Hill Survey Data Analysis](https://github.com/saurabh2mishra/airflow-chesdata-analysis)
 
