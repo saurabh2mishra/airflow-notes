@@ -338,7 +338,7 @@ the inputs should not change the overall output.
 
 ### 3-  Back Filling the previous task
 
-The DAG class can be initiated with property `catchup`
+The property helps to process the historical data. The DAG class can be initiated with property `catchup`
 
 if `catchup=False` ->  Airflow starts processing from the `current` interval.
 
