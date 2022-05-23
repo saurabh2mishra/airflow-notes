@@ -79,6 +79,7 @@ These components are
 - `Workers`, responsible for doing actual work. It picks up tasks and executes them.
 - `Web server` presents a handy user interface to inspect, trigger, and debug the behaviour of DAGs and tasks.
 - `Metadata Database`, used by the scheduler, executor, and webserver to store state so that all of them can communicate and take decisions.
+        - follow this link to see, how to set and get metadata variables. [Accessing Metadata Database](#accessing-metadata-database)
 
 For now, this is enough architecture. Let's move to the next part.
 
