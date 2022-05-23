@@ -308,12 +308,12 @@ and that's represent the execution of task or a DAG.
 The __ rshift __ and __ lshift __ methods of the BaseOperator class implements the Python bit shift logical operator in the context of setting a task or a DAG downstream of another.
 See the implementation [here](https://github.com/apache/airflow/blob/5355909b5f4ef0366e38f21141db5c95baf443ad/airflow/models.py#L2569).
 
-So, **`bit shift`** been used as syntactic sugar for  `set_upstream` (<<) and `set_downstream` (>>) tasks.
+So, **`bit shift`** has been used as syntactic sugar for  `set_upstream` (<<) and `set_downstream` (>>) tasks.
 
 For example 
 `task1 >> task2` is same as `task2 << task1` is same as `task1.set_downstream(task2)` is same as  `task1.set_upstream(task2)`
 
-This operator plays important roles to build relationships among the tasks.
+This operator plays important role to build relationships among the tasks.
 
 ### **Effective Task Design**
 
@@ -656,6 +656,10 @@ config2 = get_dag_config["key2"]
 
 # If varibale is simply saved in this format key1 = value1, then we use 
 get_key1 = Variable.get("key1")
+
+# Similarly we can set the variables in metadata database.
+Variable.set("my_key", "my_value")
+
 ```
 **Accessing via command line**
 
