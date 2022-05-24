@@ -699,7 +699,8 @@ When we build something, we understand the working principle and its terminologi
 We have touched almost everything which we need to work on any Airflow project
 but once we start coding, then again, we might need to come here to check the theory which we have covered above or
 if the complexity of the project demands some advanced concepts, then we also need to read them 
-for example, dynamic dag and task creation (dag factory), deployment, monitoring etc. (this is the #todo work)
+for example, dynamic dag and task creation (dag factory), deployment, monitoring, dag management, 
+data quality checks, unit test etc. (this is the #todo work)
 
 But for now, we are set to go. So, let's create a project and put our learning into action 💪 
 
