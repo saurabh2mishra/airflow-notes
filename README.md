@@ -717,3 +717,4 @@ Most of the details in these notes are taken from the below links. Check it out 
 - [Confluence page](https://cwiki.apache.org/confluence/display/AIRFLOW/Airflow+Home)
 - [![Twitter Follow](https://img.shields.io/twitter/follow/apacheairflow?style=social)](https://twitter.com/ApacheAirflow)
 - [Slack workspace](https://apache-airflow-slack.herokuapp.com/)
+- [Astronomer Blogs](https://www.astronomer.io/blog/)
