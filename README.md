@@ -28,6 +28,11 @@ then please feel free to contribute or highlight.
         - [Scheduler](#scheduler)
         - [Executors](#executors)
         - [hooks](#hooks)
+- [Managing task dependencies](#managing-task-dependencies)
+    - [Dependencies](#dependencies)
+    - [Branching](#branching)
+    - [Trigger Rule](#trigger-rule)
+    - [Cross Communication aka XCOM](#cross-communication-aka-xcom)
 - [Accessing Metadata Database](#accessing-metadata-database)
 - [Best Practices](#best-practices)
 - [Where to go from here?](#where-to-go-from-here)
@@ -640,6 +645,173 @@ class MyCustomHook(BaseHook):
         pass
 
 ```
+# Managing task dependencies
+
+Most of the time in a workflow, to execute a task, we need to check the prerequisites for that task to execute. It is called dependencies.
+There are different types
+
+## Dependencies
+
+1- **`Linear dependencies** - Each task must be completed before executing the next. For instance,
+
+```mermaid
+flowchart LR
+A[first_task] --> B[second_task] --> c[third_task] 
+```
+
+Airflow representation
+
+`first_task >> second_task >> third_task`
+
+**first_task must be completed before the second and third tasks. And second_task must be completed before third_task**
+
+
+2- **`Fan-In and Fan-Out dependencies** - In this dependency, a task waits for multiple tasks to finish. For example,
+
+
+```mermaid
+flowchart LR
+A[first_task] --> B[second_task] --> C[third_task] 
+D[extra_dependent_task] --> C[third_task]
+C[third_task] --> E[end_task]
+```
+Airflow representation
+
+`first_task >> second_task >>third_task >>end_task`
+
+`extra_dependent_task >> third_task`
+
+## Branching 
+
+Branching helps to take decisions to decide which task or dag to execute.
+
+1- **`Branching within the Task`**
+
+Programmatically handled the task execution 
+
+```python
+def _decide_task(**context):    
+    if context["execution_date"] < ROLLOUT_DATE:
+        old_task(**context)
+    else
+        new_task(**context)
+    
+...
+
+task_branching = PythonOperator(
+    task_id="task_branching",
+    python_callable=_decide_task,
+)
+```
+**Cons** - Difficult to know by the DAG visualization which path was executed and why
+
+2- **`Branching within the DAG`**
+
+Dummy Operator helps to achieve branching within DAGS.
+
+Let's create below DAG
+
+```mermaid
+flowchart LR
+A[start] --> B1[initialize_system] --> B[run_job] --> C[combine_task] 
+B1[initialize_system] --> D1[new_data] --> J[joined_data] 
+B1[initialize_system] --> D2[old_data] --> J[joined_data] 
+B1[initialize_system] --> R[reference_data] --> J[joined_data] --> C[combine_task]
+C[combine_task] --> F[end_task]
+```
+
+So above, we run our job daily and there are two datasets (old and new) that are required to be merged to
+reference data to supply input to `combine_job` task.
+
+This way, joined _dataa will start executing as soon as all of its parents have
+finished executing without any failures, allowing it to continue its execution after the branch
+
+However, to make it a bit better, we can add a dummy task to mark the completion of joining
+old and new datasets. It's better to safeguard that old and new data are surely available for
+the next run.
+
+for example,
+
+```python
+from airflow.operators.dummy import DummyOperator
+ 
+join_branch = DummyOperator(
+    task_id="join_old_and_new_data",
+    trigger_rule="none_failed"
+)
+```
+
+Out workflow will looklike this 
+
+
+```mermaid
+flowchart LR
+A[start] --> B1[initialize_system] --> B[run_job] --> C[combine_task] 
+B1[initialize_system] --> D1[new_data] --> D3[join_old_and_new_data] 
+B1[initialize_system] --> D2[old_data] --> D3[join_old_and_new_data] 
+D3[join_old_and_new_data] --> J[joined_data] 
+B1[initialize_system] --> R[reference_data] --> J[joined_data] --> C[combine_task]
+C[combine_task] --> F[end_task]
+```
+
+Now adding an extra task for the old and new datasets can help us to make it clear visual and also
+to enable control to make sure that data is available for the next run.
+
+## Trigger Rule
+
+All Airflow operators provides `trigger_rule` argument the defines as
+**trigger this task when all directly upstream tasks have succeeded**
+ 
+- All existing options are
+    - all_success: (default) all parents have succeeded
+    - all_failed: all parents are in a failed or upstream_failed state
+    - all_done: all parents are done with their execution
+    - one_failed: fires as soon as at least one parent has failed, it does not wait for all parents to be done
+    - one_success: fires as soon as at least one parent succeeds, it does not wait for all parents to be done
+    - none_failed: all parents have not failed (failed or upstream_failed) i.e. all parents have succeeded or been skipped
+    - none_skipped: no parent is in a skipped state, i.e. all parents are in a success, failed, or upstream_failed state
+    - dummy: dependencies are just for show, trigger at will
+
+## Cross Communication aka XCOM
+
+XCOM is used to share data between the tasks.
+
+**`xcom_push`** - register data in Airflow Metadata db
+**`xcom_pull`** - use registered data from Airflow Metadata db
+
+example 
+
+```python
+from airflow import DAG
+from airflow.utils.dates import days_ago
+from airflow.operators.bash_operator import BashOperator
+
+default_args = {
+    'owner': 'airflow',
+    'start_date': days_ago(1),
+}
+
+dag = DAG('xcom_example', 
+          schedule_interval=None,
+         default_args=args)
+
+task_1 = BashOperator(task_id="task_1",
+                    bash_command='echo "{{ ti.xcom_push(key="xcom-key", value="xcom-data-to-share") }}"',
+                    dag=dag)
+
+task_2  = BashOperator(task_id="task_2",
+                       bash_command='echo "{{ ti.xcom_pull(key="xcom-key") }}"',
+                       dag=dag)
+
+task_1 >> task_2
+```
+
+**Limitations**
+
+- Don't use it to share BIG DATA ( Be mindful that Airflow is a orchestrator not computational framework)
+- Any value stored by an XCom needs to support being serialized.
+
+
 # Accessing Metadata Database
 
 Airflow Metadata database can be used for storing DAG configurations, tables, constants and IDs. It uses Key-Value pair to maintain these variables.
