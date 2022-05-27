@@ -35,6 +35,7 @@ then please feel free to contribute or highlight.
     - [Trigger Rule](#trigger-rule)
     - [Cross Communication aka XCOM](#cross-communication-aka-xcom)
 - [Accessing Metadata Database](#accessing-metadata-database)
+- [Testing](#testing)
 - [Best Practices](#best-practices)
 - [Where to go from here?](#where-to-go-from-here)
 - [Reference](#reference)
@@ -845,7 +846,22 @@ docker-compose run --rm webserver airflow variables --get key1
 
 ```
 
+# Testing
 
+For Airflow, generally below tests can be performed.
+
+- **DAG Validation Test** 
+        - To test whether DAG is Valid and Acyclic.
+- **Unit Test** 
+        - To test python functions, operators etc.
+
+- **Integration Test** 
+        - To test whether tasks of the workflow can connect each other.
+
+- **Workflow Test** 
+        - To test complete pipeline
+
+Check this blog for [in depth testing](https://medium.com/wbaa/datas-inferno-7-circles-of-data-testing-hell-with-airflow-cef4adff58d8)
 
 # Best Practices
 
