@@ -3,8 +3,9 @@
 This content I have created for my quick reference. I have tried to put all concepts/jargon lucidly to make our understanding of the Airflow clear and to the point.
 However, before you jump and dig into it, there are two prerequisites.
 
-- 🔴 Python
-- 🔴 [Extract-Transform-Load aka ETL](https://en.wikipedia.org/wiki/Extract,_transform,_load)
+🔴 Python
+
+🔴 [Extract-Transform-Load aka ETL](https://en.wikipedia.org/wiki/Extract,_transform,_load)
  
 And the reason for those prerequisites is apparent - Either we build a report or machine learning project, ETL is a must for both, and since Airflow is written in Python, we cannot avoid it. 
 
@@ -862,7 +863,8 @@ docker-compose run --rm webserver airflow variables --get key1
 - Specify configuration details once - The place where SQL templates are is configured as an Airflow Variable and looked up as a global parameter when the DAG is instantiated.
 - Pool your resources: All task instances in the DAG use a pooled connection to the DWH by specifying the pool parameter. 
 - Manage login details in one place - Connection settings are maintained in the Admin menu.
-- Sense when to start a task - The processing of dimensions and facts has external task sensors, which wait until all processing of external DAGs has finished up to the required day.
+- Sense when to start a task. Normal scheduler or trigger to strat a workflow.
+ Th
 
 # Where to go from here?
 
