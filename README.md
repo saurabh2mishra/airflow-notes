@@ -861,7 +861,10 @@ For Airflow, generally below tests can be performed.
 - **Workflow Test** 
         - To test complete pipeline
 
-Check this blog for [in depth testing](https://medium.com/wbaa/datas-inferno-7-circles-of-data-testing-hell-with-airflow-cef4adff58d8)
+Check these blogs for in depth knowledge.
+
+- [medium-blog](https://medium.com/wbaa/datas-inferno-7-circles-of-data-testing-hell-with-airflow-cef4adff58d8)
+- [airflow-testing-example](https://www.astronomer.io/guides/testing-airflow)
 
 # Best Practices
 
