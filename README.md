@@ -883,8 +883,7 @@ Check these blogs for in depth knowledge.
 - Specify configuration details once - The place where SQL templates are is configured as an Airflow Variable and looked up as a global parameter when the DAG is instantiated.
 - Pool your resources: All task instances in the DAG use a pooled connection to the DWH by specifying the pool parameter. 
 - Manage login details in one place - Connection settings are maintained in the Admin menu.
-- Sense when to start a task. Normal scheduler or trigger to strat a workflow.
- Th
+- Know when to start a task. Normal scheduler or Event Trigger?
 
 # Where to go from here?
 
