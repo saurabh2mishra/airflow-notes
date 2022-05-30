@@ -886,13 +886,7 @@ Check these blogs for in depth knowledge.
 
 # Where to go from here?
 
-An essential part of learning anything is to create a project. 
-When we build something, we understand the working principle and its terminologies the hard way. 
-We have touched almost everything which we need to work on any Airflow project
-but once we start coding, then again, we might need to come here to check the theory which we have covered above or
-if the complexity of the project demands some advanced concepts, then we also need to read them 
-for example, dynamic dag and task creation (dag factory), deployment, monitoring, dag management, 
-data quality checks, unit test etc. (this is the #todo work)
+An essential part of learning anything is to create a project. When we build something, we understand the working principle and its terminologies the hard way. We have touched almost everything we need to work on any Airflow project. However, you might need to come back here again to refresh the theory or google some advanced topics once we start working on the project (for example, dynamic dag, task creation — dag factory, deployment, monitoring, dag management, data quality checks, unit tests, etc). Do let me know if you want to see more details on those topics.
 
 But for now, we are set to go. So, let's create a project and put our learning into action 💪 
 
