@@ -103,7 +103,9 @@ Installing Airflow with Docker is simple and intuitive which helps us to underst
 
 ![Docker memory setting](/imgs/docker_memory_settings.png)
 
-### Installation Steps
+Refer to this link if you are trying to install Airflow in windows (I haven't tried it myself)- [link1](https://medium.com/@ryanroline/installing-apache-airflow-on-windows-10-5247aa1249ef) and [link2](https://www.youtube.com/watch?v=CLUhL6-RpqU)
+
+### Installation Steps (on Mac)
 1.  Create a file name as airflow_runner.sh. Copy the below commands in the script. 
 
 ```
