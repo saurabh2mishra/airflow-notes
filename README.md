@@ -571,6 +571,10 @@ Airflow scheduler works on the principle of **`Cron based job`** execution. Belo
 * * * * *
 
 ```
+**every 5th minute** -> */5 * * * *
+
+**every hour at minute 30** e.g. at 10:30, 11:30, 12:30 and so on. -> 0,5,10 * * * * 
+
 Sometimes if you haven't worked before on Unix based cron job scheduler, then it is tough to know how to write them exactly
 (it's also tricky for experienced developers as well).
 
